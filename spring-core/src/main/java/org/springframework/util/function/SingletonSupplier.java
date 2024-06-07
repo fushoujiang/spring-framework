@@ -53,8 +53,11 @@ public class SingletonSupplier<T> implements Supplier<T> {
 	 * @param defaultSupplier the default supplier as a fallback
 	 */
 	public SingletonSupplier(@Nullable T instance, Supplier<? extends T> defaultSupplier) {
+
 		this.instanceSupplier = null;
+		//默认的线程池包装：从this.singletonInstance获取或者instanceSupplier获取
 		this.defaultSupplier = defaultSupplier;
+		//如果没有传为空
 		this.singletonInstance = instance;
 	}
 

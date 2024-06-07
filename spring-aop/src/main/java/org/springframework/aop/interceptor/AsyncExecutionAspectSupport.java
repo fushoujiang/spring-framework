@@ -161,16 +161,24 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	 */
 	@Nullable
 	protected AsyncTaskExecutor determineAsyncExecutor(Method method) {
+		//获取缓存是否存在
 		AsyncTaskExecutor executor = this.executors.get(method);
+		//不存在，首次加载
 		if (executor == null) {
 			Executor targetExecutor;
+			//获取注解设定的org.springframework.scheduling.annotation.Async.value，如果设置了则根据这个beanName获取对应的bean
 			String qualifier = getExecutorQualifier(method);
 			if (StringUtils.hasLength(qualifier)) {
+				//根据beanFactory和qualifier获取bean
 				targetExecutor = findQualifiedExecutor(this.beanFactory, qualifier);
-			}
-			else {
+			} else {
+				//获取默认的线程池
+				/**
+				 * @see AsyncExecutionAspectSupport#getDefaultExecutor(org.springframework.beans.factory.BeanFactory)
+				 */
 				targetExecutor = this.defaultExecutor.get();
 			}
+			//如果默认的线程池没有则获取默认的线程池
 			if (targetExecutor == null) {
 				return null;
 			}
@@ -230,11 +238,14 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 				// Search for TaskExecutor bean... not plain Executor since that would
 				// match with ScheduledExecutorService as well, which is unusable for
 				// our purposes here. TaskExecutor is more clearly designed for it.
+				//获取TaskExecutor.class类型的bean，如果有多个bean或者没有bean则抛异常，获取
 				return beanFactory.getBean(TaskExecutor.class);
 			}
+			//如果初始化的两个TaskExecutor.class的bean，则获取beanName=taskExecutor且类型最接近Executor.class的bean
 			catch (NoUniqueBeanDefinitionException ex) {
 				logger.debug("Could not find unique TaskExecutor bean", ex);
 				try {
+					//在异常中获取默认的线程池bean
 					return beanFactory.getBean(DEFAULT_TASK_EXECUTOR_BEAN_NAME, Executor.class);
 				}
 				catch (NoSuchBeanDefinitionException ex2) {
@@ -245,6 +256,7 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 					}
 				}
 			}
+			//如果没有初始化TaskExecutor.class的bean，则获取beanName=taskExecutor且类型最接近Executor.class的bean】
 			catch (NoSuchBeanDefinitionException ex) {
 				logger.debug("Could not find default TaskExecutor bean", ex);
 				try {

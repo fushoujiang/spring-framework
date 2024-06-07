@@ -35,7 +35,6 @@ dependencies {
 	objenesis("org.objenesis:objenesis:${objenesisVersion}@jar")
 	api(files(cglibRepackJar))
 	api(files(objenesisRepackJar))
-	api(project(":spring-jcl"))
 	compileOnly("io.projectreactor.tools:blockhound")
 	optional("net.sf.jopt-simple:jopt-simple")
 	optional("org.aspectj:aspectjweaver")

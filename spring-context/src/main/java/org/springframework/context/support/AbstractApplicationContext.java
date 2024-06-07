@@ -553,6 +553,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// 为beanFactory添加内部的BeanPostProcessor的bean对象等
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -564,6 +565,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				//从beanFactory的beanDefinitions中获取实现了BeanPostProcessor接口的beanDefinition，
+				//然后创建bean对象，添加到beanFactory
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 

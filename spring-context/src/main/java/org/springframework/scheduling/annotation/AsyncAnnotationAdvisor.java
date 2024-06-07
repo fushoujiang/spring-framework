@@ -103,7 +103,9 @@ public class AsyncAnnotationAdvisor extends AbstractPointcutAdvisor implements B
 		catch (ClassNotFoundException ex) {
 			// If EJB 3.1 API not present, simply ignore.
 		}
+		//构建advice也就是类AnnotationAsyncExecutionInterceptor
 		this.advice = buildAdvice(executor, exceptionHandler);
+		//构建切面没仔细看
 		this.pointcut = buildPointcut(asyncAnnotationTypes);
 	}
 

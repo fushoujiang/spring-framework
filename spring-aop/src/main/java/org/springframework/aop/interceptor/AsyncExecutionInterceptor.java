@@ -104,12 +104,14 @@ public class AsyncExecutionInterceptor extends AsyncExecutionAspectSupport imple
 		Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
 		final Method userDeclaredMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
 
+		//获取执行的线程池
 		AsyncTaskExecutor executor = determineAsyncExecutor(userDeclaredMethod);
 		if (executor == null) {
 			throw new IllegalStateException(
 					"No executor specified and no default executor set on AsyncExecutionInterceptor either");
 		}
 
+		//有文章说异步执行方法是必须为Future接口或者Void，并不能在这体现，这仅仅是包装了一个任务
 		Callable<Object> task = () -> {
 			try {
 				Object result = invocation.proceed();
@@ -126,6 +128,8 @@ public class AsyncExecutionInterceptor extends AsyncExecutionAspectSupport imple
 			return null;
 		};
 
+		// 这块代码是不可以有其他返回值的，只能CompletableFuture，ListenableFuture，Future，void.class，其他类型直接抛出异常，
+		// 注意，只有在执行的时候才抛出异常，是否可以在初始化的时候就抛出异常？
 		return doSubmit(task, executor, invocation.getMethod().getReturnType());
 	}
 
